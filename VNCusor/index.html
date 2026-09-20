@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VNCusor - Ultimate Cursor Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #09090b;
+            --surface-color: #18181b;
+            --border-color: #27272a;
+            --text-main: #fafafa;
+            --text-muted: #a1a1aa;
+            --primary: #00ff9d;
+            --primary-hover: #00cc7d;
+            --accent-pink: #ff007f;
+            --accent-blue: #00e5ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
+        
+        /* HEADER & HERO */
+        header { text-align: center; padding: 100px 20px 80px; position: relative; overflow: hidden; }
+        .glow { position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(0, 255, 157, 0.15) 0%, transparent 70%); z-index: -1; }
+        
+        .badge { display: inline-block; background: rgba(0, 255, 157, 0.1); color: var(--primary); font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 30px; margin-bottom: 24px; border: 1px solid rgba(0, 255, 157, 0.3); letter-spacing: 1px; }
+        .version { background: rgba(255, 0, 127, 0.1); color: var(--accent-pink); border-color: rgba(255, 0, 127, 0.3); margin-left: 10px; }
+        
+        h1 { font-size: 56px; font-weight: 900; margin-bottom: 20px; letter-spacing: -1px; }
+        h1 span { background: -webkit-linear-gradient(45deg, var(--primary), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .subtitle { font-size: 18px; color: var(--text-muted); max-width: 700px; margin: 0 auto 40px; }
+        
+        .btn-download { display: inline-block; background: var(--primary); color: var(--bg-color); font-weight: 800; font-size: 18px; padding: 16px 40px; border-radius: 12px; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 255, 157, 0.3); text-transform: uppercase; letter-spacing: 1px; }
+        .btn-download:hover { background: var(--primary-hover); transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0, 255, 157, 0.4); }
+        
+        /* CONTAINER */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        /* DETAILED FEATURES SECTION */
+        .section-title { text-align: center; font-size: 36px; font-weight: 800; margin: 80px 0 50px; }
+        .section-title span { color: var(--primary); }
+
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 60px; }
+        
+        .feature-card { background: var(--surface-color); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; transition: 0.3s; position: relative; overflow: hidden; }
+        .feature-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        .feature-card h3 { font-size: 22px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .feature-card p { color: var(--text-muted); font-size: 15px; }
+        
+        .icon-spotlight { color: #f59e0b; }
+        .icon-laser { color: var(--accent-pink); }
+        .icon-hud { color: var(--accent-blue); }
+        .icon-fx { color: var(--primary); }
+
+        /* DEEP DIVE SECTIONS */
+        .deep-dive { display: flex; align-items: center; gap: 40px; margin: 80px 0; background: var(--surface-color); padding: 40px; border-radius: 20px; border: 1px solid var(--border-color); }
+        .deep-dive.reverse { flex-direction: row-reverse; }
+        .deep-dive-content { flex: 1; }
+        .deep-dive-content h2 { font-size: 32px; margin-bottom: 20px; }
+        .deep-dive-content ul { list-style: none; margin-top: 20px; }
+        .deep-dive-content li { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; color: var(--text-muted); }
+        .deep-dive-content li::before { content: '✓'; color: var(--primary); font-weight: bold; background: rgba(0,255,157,0.1); width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; border-radius: 50%; }
+        
+        .deep-dive-visual { flex: 1; min-height: 250px; background: #000; border-radius: 12px; border: 2px dashed var(--border-color); display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
+        .demo-hud { font-size: 32px; font-weight: bold; color: var(--primary); background: rgba(0,0,0,0.8); padding: 15px 30px; border-radius: 12px; border: 1px solid rgba(0,255,157,0.3); }
+        .demo-laser { width: 100%; height: 100%; background: linear-gradient(90deg, transparent, var(--accent-pink), transparent); height: 4px; transform: rotate(-15deg); box-shadow: 0 0 20px var(--accent-pink); }
+
+        /* SHORTCUTS TABLE */
+        .hotkeys { background: var(--surface-color); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 80px; }
+        .hotkeys table { width: 100%; border-collapse: collapse; text-align: left; }
+        .hotkeys th { background: #202024; padding: 16px 24px; font-weight: 700; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
+        .hotkeys td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); color: var(--text-muted); }
+        .hotkeys tr:last-child td { border-bottom: none; }
+        kbd { background: #27272a; border: 1px solid #3f3f46; border-radius: 6px; padding: 4px 10px; font-family: monospace; color: var(--primary); font-size: 14px; font-weight: bold; box-shadow: 0 2px 0 #000; }
+
+        /* FOOTER */
+        footer { border-top: 1px solid var(--border-color); padding: 60px 20px; text-align: center; background: #050505; }
+        .credit-box { display: inline-block; background: #18181b; border: 1px solid #3f3f46; padding: 20px 40px; border-radius: 12px; text-align: left; margin-bottom: 30px; }
+        .credit-box h4 { color: var(--primary); margin-bottom: 10px; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; }
+        .credit-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 5px; }
+        .credit-box strong { color: var(--text-main); }
+        .footer-note { font-size: 13px; color: #71717a; }
+    </style>
+</head>
+<body>
+
+    <!-- HERO SECTION -->
+    <header>
+        <div class="glow"></div>
+        <div class="container">
+            <div class="badge">INTERNAL CIRCULATION ONLY</div>
+            <div class="badge version">V1.1 RELEASE</div>
+            <h1>VNCusor <span>Engine</span></h1>
+            <p class="subtitle">Công cụ tối thượng lột xác con trỏ chuột của bạn. Rọi sáng màn hình, hiển thị phím tắt, vẽ laser tàng hình và bùng nổ hiệu ứng thị giác. Sinh ra để dành riêng cho Streamer, Giáo viên và Content Creators.</p>
+            <a href="https://github.com/votrongnam/VNCusor/releases" class="btn-download">📥 Tải Bộ Cài Setup (Windows)</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- QUICK FEATURES -->
+        <h2 class="section-title">Vũ khí bí mật cho <span>Buổi Stream Đỉnh Cao</span></h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3 class="icon-spotlight">🔦 Cụm Đèn Spotlight</h3>
+                <p>Nhấn chìm toàn bộ màn hình vào bóng tối và chỉ rọi sáng duy nhất khu vực con trỏ chuột. Tuyệt chiêu điều hướng ánh nhìn của khán giả không thể rời mắt khỏi thao tác của bạn.</p>
+            </div>
+            <div class="feature-card">
+                <h3 class="icon-laser">🪄 Laser & Dạ Quang</h3>
+                <p>Giữ phím tắt để biến chuột thành bút vẽ. Vẽ tia laser tàng hình tự động bay màu sau vài giây, hoặc đánh dấu cố định trên màn hình (chỉ biến mất khi bạn bấm ESC).</p>
+            </div>
+            <div class="feature-card">
+                <h3 class="icon-hud">⌨️ Keystroke HUD</h3>
+                <p>Mọi tổ hợp phím bạn gõ (Ctrl+C, Shift+Alt+Del...) đều được hiển thị sắc nét lên màn hình với hiệu ứng làm mờ mượt mà. Vị trí HUD có thể kéo thả tự do theo ý thích.</p>
+            </div>
+            <div class="feature-card">
+                <h3 class="icon-fx">🎆 VFX & SFX Sinh động</h3>
+                <p>Hệ thống hạt bụi ma thuật lơ lửng, sóng Ripple lan tỏa theo từng cú click, và hệ thống đếm Combo "Rampage - Godlike" khi bạn spam click. Kèm theo âm thanh cơ học đanh gọn.</p>
+            </div>
+        </div>
+
+        <!-- DEEP DIVE 1: HUD -->
+        <div class="deep-dive">
+            <div class="deep-dive-content">
+                <h2>Cửa sổ Keystroke HUD Thông minh</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Dạy học hoặc làm video Tutorial chưa bao giờ dễ đến thế. Người xem sẽ biết chính xác bạn đang bấm phím gì.</p>
+                <ul>
+                    <li>Nhận diện chuẩn xác các phím Modifier (Ctrl, Shift, Alt, Win).</li>
+                    <li>Tự động mờ dần (Fade-out) sau 2 giây không gõ.</li>
+                    <li>Cho phép dùng chuột nắm kéo thả Box HUD đến bất kỳ góc nào.</li>
+                    <li>Tùy ý đổi màu chữ HUD đồng bộ với màu Bút Dạ Quang.</li>
+                </ul>
+            </div>
+            <div class="deep-dive-visual">
+                <div class="demo-hud">Ctrl + Shift + S</div>
+            </div>
+        </div>
+
+        <!-- DEEP DIVE 2: CUSTOMIZATION -->
+        <div class="deep-dive reverse">
+            <div class="deep-dive-content">
+                <h2>Cá Nhân Hóa 100% Theo Style Của Bạn</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Một Dashboard duy nhất để điều khiển mọi thứ. Code chạy ngầm tối ưu cực nhẹ, không bao giờ ngốn RAM.</p>
+                <ul>
+                    <li><strong>3 Kiểu Dáng:</strong> Solid (Đặc mờ), Ring (Vòng rỗng neon), Dot (Chấm nhỏ tĩnh).</li>
+                    <li><strong>Độ Trễ Mượt (Smooth Delay):</strong> Trễ bồng bềnh nghệ thuật hoặc bám sát tốc độ chuột.</li>
+                    <li><strong>Đập Nhịp Thở (AFK):</strong> Vòng sáng tự động đập nhịp nhàng khi để chuột nghỉ quá 1.5 giây.</li>
+                    <li><strong>Bảng Màu Độc Lập:</strong> Tự mix màu riêng biệt cho Trạng thái thường, Chuột Trái và Chuột Phải.</li>
+                </ul>
+            </div>
+            <div class="deep-dive-visual" style="background: #18181b;">
+                <!-- Dấu ấn màu sắc -->
+                <div style="display: flex; gap: 15px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; border: 4px solid var(--primary);"></div>
+                    <div style="width: 50px; height: 50px; border-radius: 50%; border: 4px solid var(--accent-pink);"></div>
+                    <div style="width: 50px; height: 50px; border-radius: 50%; border: 4px solid var(--accent-blue);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOTKEYS -->
+        <h2 class="section-title">Bảng Điều Khiển <span>Phím Tắt</span></h2>
+        <div class="hotkeys">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Thao Tác (Action)</th>
+                        <th>Hiệu Ứng Phản Hồi (Effect)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><kbd>Click Trái / Phải</kbd></td>
+                        <td>Đổi màu tương ứng + Tỏa sóng Ripple + Kích hoạt chuỗi đếm Combo.</td>
+                    </tr>
+                    <tr>
+                        <td><kbd>Giữ Ctrl</kbd> + Kéo chuột</td>
+                        <td>Vẽ tia Bút Laser (Tia sáng sẽ tự động đứt đoạn và bay màu sau 2 giây).</td>
+                    </tr>
+                    <tr>
+                        <td><kbd>Giữ Shift</kbd> + Kéo chuột</td>
+                        <td>Vẽ Bút Dạ Quang cố định (Dùng để khoanh tròn, ghi chú cứng lên màn hình).</td>
+                    </tr>
+                    <tr>
+                        <td><kbd>Nhấn Phím ESC</kbd></td>
+                        <td>Xóa sạch toàn bộ các nét vẽ Bút Dạ Quang đang có trên màn hình.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FOOTER & CREDIT -->
+    <footer>
+        <div class="container">
+            <div class="credit-box">
+                <h4>Thông Tin Bản Quyền</h4>
+                <p>Tên dự án: <strong>VNCusor - Ultimate Cursor Engine</strong></p>
+                <p>Phiên bản hiện tại: <strong>V1.1 (Phát hành Nội bộ)</strong></p>
+                <p>Kiến trúc Sơ cấp: <strong>Python (PyQt5, Pynput, Windows API)</strong></p>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #3f3f46;">
+                    <p style="color: var(--primary); font-size: 16px;">Author / Tác giả gốc: <strong>Võ Trọng Nam</strong></p>
+                </div>
+            </div>
+            
+            <p class="footer-note">
+                Vui lòng giữ nguyên thông tin tác giả (Author) nếu bạn thực hiện giải nén, chỉnh sửa mã nguồn hoặc chia sẻ các phiên bản phái sinh.<br>
+                &copy; 2026 Votrongnam. All rights reserved. Built for Creators.
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
