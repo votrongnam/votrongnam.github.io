@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thi Thử Lịch Sử 8 Giữa HK1 (2026 - 2027)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col custom-scrollbar">
+
+  <!-- Top Sticky Bar / Header -->
+  <header class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 py-3 shadow-xl">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <!-- Title & Info -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-red-600 flex items-center justify-center text-white font-extrabold shadow-md shadow-amber-500/20">
+          LS8
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-slate-100 flex items-center gap-2">
+            Đề Ôn Tập Kiểm Tra Giữa HK1 - Lịch Sử 8
+            <span class="text-xs font-normal px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">2026 - 2027</span>
+          </h1>
+          <p class="text-xs text-slate-400">Ứng dụng thi thử chuẩn xác 100% đáp án đề giấy</p>
+        </div>
+      </div>
+
+      <!-- Controls & Timer -->
+      <div class="flex items-center gap-3">
+        <!-- Shuffle Button -->
+        <button onclick="shuffleExam()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-semibold px-3 py-1.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-2 shadow">
+          <i class="fa-solid fa-shuffle"></i>
+          <span>Trộn Đề & Làm Lại</span>
+        </button>
+
+        <!-- Timer Display -->
+        <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl">
+          <i class="fa-regular fa-clock text-amber-400 text-sm"></i>
+          <span id="timer-display" class="font-mono text-base font-bold text-amber-400">45:00</span>
+          <button id="btn-toggle-timer" onclick="toggleTimer()" class="ml-1 text-slate-400 hover:text-white transition">
+            <i class="fa-solid fa-pause text-xs" id="timer-icon"></i>
+          </button>
+        </div>
+
+        <!-- Submit Button -->
+        <button onclick="submitExam()" id="btn-submit" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-4 py-1.5 rounded-xl shadow-lg shadow-emerald-500/20 text-xs sm:text-sm transition flex items-center gap-2">
+          <i class="fa-solid fa-paper-plane text-xs"></i>
+          <span>Nộp Bài</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto w-full px-4 py-6 flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+    <!-- Left / Center Content (Questions) -->
+    <main class="lg:col-span-3 space-y-8">
+
+      <!-- Navigation Tabs -->
+      <div class="flex border-b border-slate-800 gap-2 overflow-x-auto pb-1">
+        <button onclick="switchTab('part1')" id="tab-btn-part1" class="px-4 py-2 text-sm font-bold border-b-2 border-amber-500 text-amber-400 whitespace-nowrap transition">
+          Phần I: Trắc Nghiệm (15 câu)
+        </button>
+        <button onclick="switchTab('part2')" id="tab-btn-part2" class="px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap transition">
+          Phần II: Đúng / Sai (5 câu)
+        </button>
+        <button onclick="switchTab('part3')" id="tab-btn-part3" class="px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap transition">
+          Phần III: Tự Luận (6 câu)
+        </button>
+      </div>
+
+      <!-- Result Banner -->
+      <div id="result-banner" class="hidden bg-slate-900 border-2 border-emerald-500/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 opacity-10 text-emerald-400 text-9xl font-black">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="space-y-2 text-center md:text-left">
+            <h2 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
+              KẾT QUẢ BÀI THI CỦA BẠN
+            </h2>
+            <p class="text-slate-400 text-sm">Điểm số được quy đổi chuẩn xác theo hệ thống thang điểm 10.</p>
+          </div>
+          <div class="flex items-center gap-6 bg-slate-950/80 px-6 py-4 rounded-xl border border-slate-800">
+            <div class="text-center">
+              <div class="text-3xl font-black text-amber-400" id="res-score-mcq">0.0 / 10</div>
+              <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Tổng Điểm Trắc Nghiệm</div>
+            </div>
+            <div class="h-8 w-[1px] bg-slate-800"></div>
+            <div class="text-center">
+              <div class="text-3xl font-black text-emerald-400" id="res-accuracy">0%</div>
+              <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Tỷ lệ chính xác</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 1: TRẮC NGHIỆM CHỌN 1 ĐÁP ÁN -->
+      <section id="section-part1" class="space-y-6">
+        <div class="flex justify-between items-center bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+          <h2 class="text-base font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-list-check"></i> PHẦN I: Trắc nghiệm nhiều phương án lựa chọn (1.5 điểm - 15 câu)
+          </h2>
+          <span class="text-xs text-slate-400">Chọn 01 đáp án đúng nhất cho mỗi câu</span>
+        </div>
+
+        <div id="container-part1" class="space-y-6"></div>
+      </section>
+
+      <!-- SECTION 2: TRẮC NGHIỆM ĐÚNG/SAI -->
+      <section id="section-part2" class="space-y-6 hidden">
+        <div class="flex justify-between items-center bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+          <h2 class="text-base font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-file-signature"></i> PHẦN II: Trắc nghiệm Đúng / Sai theo tư liệu (8.5 điểm - 5 câu tư liệu)
+          </h2>
+          <span class="text-xs text-slate-400">Xác định Đúng (Đ) hoặc Sai (S) cho từng nhận định</span>
+        </div>
+
+        <div id="container-part2" class="space-y-8"></div>
+      </section>
+
+      <!-- SECTION 3: TỰ LUẬN -->
+      <section id="section-part3" class="space-y-6 hidden">
+        <div class="flex justify-between items-center bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+          <h2 class="text-base font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square"></i> B. PHẦN TỰ LUẬN (6 câu)
+          </h2>
+          <span class="text-xs text-slate-400">Tự luyện gõ câu trả lời và xem dàn ý chuẩn</span>
+        </div>
+
+        <div id="container-part3" class="space-y-6"></div>
+      </section>
+
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sticky top-20 shadow-xl">
+        <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-grip text-amber-400"></i> Bảng Điều Hướng
+        </h3>
+
+        <!-- Part 1 Palette -->
+        <div class="mb-4">
+          <span class="text-xs text-slate-400 font-semibold mb-2 block">Phần I: Trắc nghiệm (15 câu)</span>
+          <div class="grid grid-cols-5 gap-2" id="palette-part1"></div>
+        </div>
+
+        <!-- Part 2 Palette -->
+        <div class="mb-4">
+          <span class="text-xs text-slate-400 font-semibold mb-2 block">Phần II: Đúng / Sai (5 tư liệu)</span>
+          <div class="grid grid-cols-5 gap-2" id="palette-part2"></div>
+        </div>
+
+        <!-- Part 3 Palette -->
+        <div class="mb-6">
+          <span class="text-xs text-slate-400 font-semibold mb-2 block">Phần III: Tự luận (6 câu)</span>
+          <div class="grid grid-cols-3 gap-2" id="palette-part3"></div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 text-xs text-slate-400 space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded bg-slate-950 border border-slate-800"></span> Chưa làm
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded bg-indigo-600"></span> Đã chọn
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded bg-emerald-500"></span> Đúng
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded bg-red-500"></span> Sai
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4">
+      Hệ Thống Thi Thử Tương Tác Lịch Sử 8 • Dựa trên tài liệu ôn tập LS-L8-.docx NH 2026 - 2027
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // ----------------------------------------------------
+    // ORIGINAL RAW DATA (Exact answer key from handwriting)
+    // ----------------------------------------------------
+    const rawPart1 = [
+      { id: 1, question: "Cuộc cách mạng công nghiệp lần thứ nhất trên thế giới được bắt đầu từ lĩnh vực nào?", options: ["Ngành dệt", "Ngành khai thác khoáng sản", "Giao thông vận tải", "Chế tạo máy móc"], correctText: "Ngành dệt", explanation: "Khởi đầu từ ngành dệt vải công nghiệp nhẹ ở Anh." },
+      { id: 2, question: "Giêm Oát là người đã phát minh ra cái gì?", options: ["Máy kéo sợi Gien-ni", "Máy hơi nước", "Đầu máy xe lửa", "Tàu thủy chạy bằng máy hơi nước"], correctText: "Máy hơi nước", explanation: "Giêm Oát phát minh ra máy hơi nước năm 1784." },
+      { id: 3, question: "Mục đích của thực dân phương Tây khi duy trì chính quyền phong kiến địa phương là gì?", options: ["Để biến họ thành tay sai của thực dân", "Để phát triển kinh tế địa phương", "Để bảo tồn văn hóa truyền thống", "Để trao trả độc lập dần dần"], correctText: "Để biến họ thành tay sai của thực dân", explanation: "Duy trì bộc lộ chính quyền phong kiến để làm tay sai cai trị." },
+      { id: 4, question: "Mục đích chính của việc mở rộng các tuyến giao thông thời kỳ thuộc địa là gì?", options: ["Phục vụ nhu cầu nhân dân", "Để khai thác và vận chuyển tài nguyên", "Phát triển du lịch", "Giao lưu văn hóa"], correctText: "Để khai thác và vận chuyển tài nguyên", explanation: "Mở rộng hạ tầng giao thông nhằm vơ vét tài nguyên thuộc địa." },
+      { id: 5, question: "Mục đích chính của chính sách kinh tế thực dân là gì?", options: ["Phát triển toàn diện thuộc địa", "Hỗ trợ nhân dân bản địa", "Phân hoá", "Xây dựng nền công nghiệp hiện đại"], correctText: "Phân hoá", explanation: "Gây phân hóa kinh tế sâu sắc." },
+      { id: 6, question: "Đặc điểm nổi bật của xã hội thuộc địa ở Đông Nam Á là gì?", options: ["Khai thác thuộc địa", "Được tự do phát triển", "Bình đẳng xã hội", "Không bị áp bức"], correctText: "Khai thác thuộc địa", explanation: "Bị thực dân khai thác kiệt quệ." },
+      { id: 7, question: "Cách mạng công nghiệp đã đưa đến sự hình thành các giai cấp cơ bản nào của xã hội tư bản?", options: ["Địa chủ và nông dân", "Tư sản và vô sản", "Quý tộc và nô lệ", "Tư sản và tiểu tư sản"], correctText: "Tư sản và vô sản", explanation: "Hình thành 2 giai cấp tư sản và vô sản." },
+      { id: 8, question: "Cách mạng công nghiệp thế kỉ XVIII – XIX là:", options: ["quá trình công nghiệp hóa, hiện đại hóa các nước tư bản châu Âu", "quá trình hình thành nền tảng kinh tế chính của xã hội tư bản: công nghiệp và thương nghiệp", "quá trình chuyển biến từ nền sản xuất nhỏ thủ công sang sản xuất lớn bằng máy móc", "quá trình hình thành của hai giai cấp tư sản và công nhân"], correctText: "quá trình chuyển biến từ nền sản xuất nhỏ thủ công sang sản xuất lớn bằng máy móc", explanation: "Chuyển từ thủ công sang sản xuất bằng máy móc." },
+      { id: 9, question: "Lực lượng nào đóng vai trò lãnh đạo trong cuộc cách mạng tư sản Anh (1642-1688)?", options: ["Tư sản và quý tộc mới", "Quý tộc phong kiến và tăng lữ", "Nông dân và công nhân", "Tư sản và nông dân"], correctText: "Tư sản và quý tộc mới", explanation: "Liên minh Tư sản và Quý tộc mới." },
+      { id: 10, question: "Sự kiện nào đã mở đường cho các nước châu Âu xâm chiếm châu Mĩ?", options: ["Sau khi Cô-lôm-bô tìm ra châu Mỹ", "Cuộc phát kiến của Ma-gen-lăng", "CMTS Anh thành công", "Hiệp ước Véc-sai 1783"], correctText: "Sau khi Cô-lôm-bô tìm ra châu Mỹ", explanation: "Cô-lôm-bô tìm ra châu Mỹ năm 1492." },
+      { id: 11, question: "Sự kiện nào đánh dấu thực dân Anh đã thừa nhận nền độc lập của các thuộc địa ở Bắc Mĩ?", options: ["Hiệp ước Véc-sai năm 1783 được kí kết", "Tuyên ngôn Độc lập năm 1776", "Chiến thắng Xa-ra-tô-ga", "Thông qua Hiến pháp 1787"], correctText: "Hiệp ước Véc-sai năm 1783 được kí kết", explanation: "Hiệp ước Véc-sai 1783 Anh công nhận độc lập." },
+      { id: 12, question: "Thắng lợi của cuộc Cách mạng tư sản Anh (1642-1688) là gì?", options: ["Mở đường cho sự phát triển mạnh mẽ của chủ nghĩa tư bản", "Xóa bỏ hoàn toàn giai cấp quý tộc", "Thiết lập chế độ XHCN", "Giải phóng nông dân"], correctText: "Mở đường cho sự phát triển mạnh mẽ của chủ nghĩa tư bản", explanation: "Mở đường cho CNTB phát triển." },
+      { id: 13, question: "Trước sự phát triển của 13 thuộc địa ở Bắc Mĩ, thực dân Anh đã có hành động gì?", options: ["Khuyến khích công nghiệp phát triển", "Tìm mọi cách ngăn cản sự phát triển công nghiệp và thương nghiệp", "Hỗ trợ vốn kỹ thuật", "Trao quyền tự trị"], correctText: "Tìm mọi cách ngăn cản sự phát triển công nghiệp và thương nghiệp", explanation: "Anh kiềm hãm công thương nghiệp thuộc địa." },
+      { id: 14, question: "Ý nào phản ánh hệ quả xã hội của cách mạng công nghiệp?", options: ["Nâng cao năng suất lao động, xã hội hóa quá trình lãnh đạo của chủ nghĩa tư bản", "Làm xuất hiện hai giai cấp cơ bản của xã hội tư bản là tư sản và vô sản", "Làm thay đổi bộ mặt của các nước tư bản", "Thúc đẩy sự chuyển biến mạnh mẽ của các ngành kinh tế khác"], correctText: "Làm xuất hiện hai giai cấp cơ bản của xã hội tư bản là tư sản và vô sản", explanation: "Hệ quả xã hội là xuất hiện giai cấp tư sản và vô sản." },
+      { id: 15, question: "Ý KHÔNG phản ánh đúng ý nghĩa của việc phát minh ra máy hơi nước:", options: ["Biến nước Anh thành “công xưởng thế giới”", "Lao động bằng tay được thay thế dần bằng máy móc", "Tốc độ sản xuất và năng suất lao động tăng vượt bậc", "Tạo ra nguồn động lực mới, khởi đầu quá trình công nghiệp hóa"], correctText: "Biến nước Anh thành “công xưởng thế giới”", explanation: "Ý A phản ánh ý nghĩa chung của CMCN chứ không chỉ riêng máy hơi nước." }
+    ];
+
+    // VERIFIED HANDWRITTEN ANSWER KEY:
+    // Doc 1: a-S, b-S, c-Đ, d-Đ
+    // Doc 2: a-Đ, b-S, c-S, d-Đ
+    // Doc 3: a-S, b-Đ, c-S, d-Đ
+    // Doc 4: a-Đ, b-S, c-Đ, d-Đ
+    // Doc 5: a-S, b-Đ, c-Đ, d-Đ
+    const rawPart2 = [
+      {
+        id: 1,
+        title: "Tư liệu 1: Về đỉnh cao của Cách mạng tư sản Anh",
+        context: "“Ngày 30 tháng 1 năm 1649, trước sự chứng kiến của hàng vạn người dân Luân Đôn, vua Sác-lơ I bị đưa lên đoạn đầu đài vì tội phản quốc. Nước Anh tuyên bố trở thành một nước Cộng hòa dưới sự lãnh đạo của Ô-li-vơ Crôm-oen. Đây là đỉnh cao của cuộc cách mạng.” (Giáo trình Lịch sử thế giới cận đại, 2008)",
+        items: [
+          { key: 'a', text: "Sự kiện xử tử vua Sác-lơ I đã chính thức chấm dứt hoàn toàn sự tồn tại của mọi hình thức quân chủ tại Anh trong suốt dòng chảy lịch sử sau này.", correct: false, exp: "SAI (S) - Theo đáp án đã sửa tay." },
+          { key: 'b', text: "Việc thiết lập nền Cộng hòa năm 1649 chứng tỏ quyền lực nhà nước đã thuộc về toàn thể quần chúng nhân dân lao động nghèo khổ ở Anh.", correct: false, exp: "SAI (S) - Quyền lực thuộc tư sản và quý tộc mới." },
+          { key: 'c', text: "Ô-li-vơ Crôm-oen là người đại diện cho quyền lợi của tầng lớp tư sản và quý tộc mới, đã lãnh đạo quân đội Quốc hội đánh bại quân đội của Nhà vua.", correct: true, exp: "ĐÚNG (Đ) - Theo đáp án sửa tay." },
+          { key: 'd', text: "Việc xử tử hình một vị vua đang tại vị là bước đi táo bạo, giáng đòn quyết định vào tư tưởng 'thần quyền' phong kiến...", correct: true, exp: "ĐÚNG (Đ) - Khẳng định chủ quyền thuộc về Quốc hội." }
+        ]
+      },
+      {
+        id: 2,
+        title: "Tư liệu 2: Về Tuyên ngôn Độc lập nước Mỹ (1776)",
+        context: "“Chúng tôi khẳng định những sự thật sau đây là tự nhiên và rõ ràng: mọi người sinh ra đều có quyền bình đẳng, tạo hóa ban cho họ những quyền không ai có thể xâm phạm được, trong những quyền ấy có quyền được sống, quyền tự do và quyền mưu cầu hạnh phúc...” (Tuyên ngôn Độc lập nước Mỹ, 4-7-1776)",
+        items: [
+          { key: 'a', text: "Tuyên ngôn Độc lập năm 1776 đã chính thức khai sinh ra một quốc gia mới với tên gọi là Hợp chúng quốc Mỹ (USA).", correct: true, exp: "ĐÚNG (Đ) - Theo đáp án sửa tay." },
+          { key: 'b', text: "Những tư tưởng về quyền con người trong Tuyên ngôn hoàn toàn là do Tô-mát Giép-phéc-sơn tự nghĩ ra, không chịu ảnh hưởng của bất kỳ trào lưu triết học nào.", correct: false, exp: "SAI (S) - Chịu ảnh hưởng từ Triết học Ánh sáng." },
+          { key: 'c', text: "Tuyên ngôn Độc lập năm 1776 đã thực hiện một cuộc cách mạng xã hội triệt để khi tuyên bố xóa bỏ ngay lập tức chế độ nô lệ da đen.", correct: false, exp: "SAI (S) - Chưa xóa bỏ ngay chế độ nô lệ." },
+          { key: 'd', text: "Giá trị mang tính thời đại của Tuyên ngôn Độc lập Mỹ là lần đầu tiên các quyền tự nhiên của con người được nâng lên thành quyền chính trị quốc gia...", correct: true, exp: "ĐÚNG (Đ) - Cổ vũ phong trào giải phóng dân tộc." }
+        ]
+      },
+      {
+        id: 3,
+        title: "Tư liệu 3: Về Tuyên ngôn Nhân quyền và Dân quyền Pháp (1789)",
+        context: "“Điều 1: Người ta sinh ra tự do và bình đẳng về quyền lợi... Điều 17: Quyền sở hữu là một quyền thiêng liêng và bất khả xâm phạm, không ai có thể bị tước đoạt...” (Tuyên ngôn Nhân quyền và Dân quyền Pháp, 26-8-1789)",
+        items: [
+          { key: 'a', text: "Tuyên ngôn Nhân quyền và Dân quyền 1789 chỉ thừa nhận và bảo vệ quyền bình đẳng cho tầng lớp quý tộc và tăng lữ của chế độ cũ.", correct: false, exp: "SAI (S) - Chống lại đặc quyền phong kiến." },
+          { key: 'b', text: "Bản Tuyên ngôn mang tính tiến bộ lớn vì đã chống lại đặc quyền đẳng cấp của chế độ phong kiến, khẳng định các quyền tự nhiên của con người.", correct: true, exp: "ĐÚNG (Đ) - Theo đáp án sửa tay." },
+          { key: 'c', text: "Việc Điều 17 khẳng định quyền sở hữu là 'thiêng liêng và bất khả xâm phạm' cho thấy bản Tuyên ngôn này đã xóa bỏ hoàn toàn chế độ tư hữu...", correct: false, exp: "SAI (S) - Nhằm bảo vệ quyền sở hữu tư sản." },
+          { key: 'd', text: "Bản chất của Tuyên ngôn mang tính chất hai mặt: vừa là văn kiện dân chủ tiến bộ, vừa bảo vệ nền tảng kinh tế tư bản chủ nghĩa.", correct: true, exp: "ĐÚNG (Đ) - Mang bản chất hai mặt." }
+        ]
+      },
+      {
+        id: 4,
+        title: "Tư liệu 4: Về tính chất triệt để của Cách mạng Pháp",
+        context: "“So với các cuộc cách mạng tư sản trước đó ở Anh và Bắc Mỹ, Cách mạng tư sản Pháp cuối thế kỷ XVIII mang tính chất triệt để hơn cả. Nó không chỉ lật đổ chế độ phong kiến ở trong nước mà còn giáng đòn nặng nề vào trật tự phong kiến toàn châu Âu.”",
+        items: [
+          { key: 'a', text: "Cách mạng Pháp triệt để hơn Cách mạng Anh vì nó đã xóa bỏ chế độ quân chủ, thiết lập nền cộng hòa và giải quyết ruộng đất cho nông dân.", correct: true, exp: "ĐÚNG (Đ) - Giải quyết triệt để ruộng đất." },
+          { key: 'b', text: "Cách mạng Pháp kém triệt để hơn Cách mạng Mỹ vì nó không thành lập được một nhà nước liên bang rộng lớn...", correct: false, exp: "SAI (S) - Cách mạng Pháp triệt để hơn." },
+          { key: 'c', text: "Sức lan tỏa của Cách mạng Pháp làm lung lay tận gốc trật tự phong kiến châu Âu vì quân đội cách mạng đã truyền bá tư tưởng tự do, bình đẳng.", correct: true, exp: "ĐÚNG (Đ) - Sức lan tỏa mạnh mẽ." },
+          { key: 'd', text: "Tính chất triệt để chứng minh luận điểm: động lực quần chúng tham gia càng đông đảo thì cuộc cách mạng càng được đẩy đi xa.", correct: true, exp: "ĐÚNG (Đ) - Động lực quần chúng." }
+        ]
+      },
+      {
+        id: 5,
+        title: "Tư liệu 5: Bối cảnh Đông Nam Á trước làn sóng xâm lược của phương Tây",
+        context: "“Từ nửa sau thế kỷ XVI, hầu hết các vương triều phong kiến ở Đông Nam Á đều bước vào giai đoạn suy thoái, khủng hoảng chính trị sâu sắc... Sự suy yếu tự thân này đã biến Đông Nam Á thành một 'vùng trũng chính trị' và là miếng mồi ngon cho các quốc gia tư bản phương Tây...”",
+        items: [
+          { key: 'a', text: "Nguyên nhân duy nhất khiến các quốc gia Đông Nam Á bị phương Tây xâm lược hoàn toàn là do sự vượt trội về mặt vũ khí của phương Tây.", correct: false, exp: "SAI (S) - Do sự khủng hoảng từ bên trong." },
+          { key: 'b', text: "Cuộc khủng hoảng toàn diện về cả chính trị lẫn kinh tế của chế độ phong kiến bản địa đã làm suy giảm khả năng phòng thủ của khu vực.", correct: true, exp: "ĐÚNG (Đ) - Suy giảm khả năng tự vệ." },
+          { key: 'c', text: "Tư duy kinh tế đóng cửa, hạn chế giao thương ở giai đoạn muộn đã gián tiếp tước đi cơ hội phát triển công nghệ và quốc phòng.", correct: true, exp: "ĐÚNG (Đ) - Bế quan tỏa cảng." },
+          { key: 'd', text: "Đoạn tư liệu chỉ ra rằng quá trình thâm nhập của phương Tây diễn ra vào thời điểm cấu trúc quyền lực phong kiến Đông Nam Á đang ở trạng thái lỏng lẻo...", correct: true, exp: "ĐÚNG (Đ) - Theo đáp án sửa tay." }
+        ]
+      }
+    ];
+
+    const rawPart3 = [
+      { id: 1, title: "Câu 1: Kết quả, ý nghĩa, tính chất và đặc điểm chính của cuộc cách mạng tư sản Anh.", content: `• Kết quả: Cách mạng đã lật đổ chế độ quân chủ chuyên chế, mở đường cho CNTB ở Anh phát triển nhanh chóng.\n• Ý nghĩa: Đây là thắng lợi của chế độ xã hội mới, thắng lợi của chế độ tư hữu TBCN đối với chế độ phong kiến.\n• Tính chất: Là cuộc cách mạng không triệt để.\n• Đặc điểm: Là cuộc cách mạng tư sản dưới hình thức nội chiến.` },
+      { id: 2, title: "Câu 2: Tác động của cách mạng công nghiệp đối với sản xuất và đời sống xã hội.", content: `* Tác động đến đời sống sản xuất:\n- Làm thay đổi căn bản quá trình sản xuất, nâng cao năng suất lao động, thúc đẩy nhiều ngành kinh tế khác phát triển, tạo ra nguồn của cải dồi dào cho xã hội.\n- Bộ mặt của các nước tư bản thay đổi với nhiều khu công nghiệp lớn và thành phố đông dân mọc lên...\n- Chuyển xã hội loài người từ văn minh nông nghiệp sang văn minh công nghiệp.\n\n* Tác động đối với đời sống xã hội:\n- Hình thành hai giai cấp cơ bản của xã hội tư bản, đó là tư sản và vô sản.\n+ Giai cấp tư sản nhờ công nghiệp hoá đã giàu lên nhanh chóng, trở thành giai cấp thống trị trong xã hội.\n+ Giai cấp vô sản ngày càng đông đảo và bị tư sản bóc lột nặng nề.` },
+      { id: 3, title: "Câu 3: Kết quả, ý nghĩa, tính chất và đặc điểm chính của cuộc cách mạng tư sản Pháp.", content: `• Kết quả: Lật đổ chế độ phong kiến, thành lập chế độ cộng hoà.\n• Ý nghĩa: Có ý nghĩa to lớn không chỉ đối với nước Pháp mà còn ảnh hưởng sâu sắc đến nhiều nước trên thế giới, nhất là ở châu Âu; để lại nhiều bài học kinh nghiệm cho phong trào cách mạng các nước.\n• Tính chất: Là cuộc cách mạng dân chủ tư sản điển hình.\n• Đặc điểm: Diễn ra dưới hình thức cuộc đấu tranh giai cấp quyết liệt do giai cấp tư sản lãnh đạo, lật đổ chế độ quân chủ chuyên chế và bảo vệ Tổ quốc.` },
+      { id: 4, title: "Câu 4: Điểm giống nhau của các cuộc cách mạng tư sản (Anh, Pháp, 13 thuộc địa Bắc Mỹ).", content: `• Mục tiêu: Lật đổ những trở ngại của chế độ phong kiến hoặc ách thống trị thực dân, mở đường cho chủ nghĩa tư bản phát triển.\n• Lãnh đạo: Giai cấp tư sản và các lực lượng có liên quan (quý tộc mới, chủ nô).\n• Lực lượng tham gia: Quần chúng nhân dân giữ vai trò quan trọng.\n• Kết quả: Đều giành được thắng lợi, tạo điều kiện cho chủ nghĩa tư bản phát triển.\n• Ý nghĩa: Tác động mạnh mẽ đến tình hình chính trị, xã hội và thúc đẩy sự phát triển của lịch sử thế giới.` },
+      { id: 5, title: "Câu 5: Kết quả, ý nghĩa, tính chất và đặc điểm của chiến tranh giành độc lập 13 thuộc địa Bắc Mỹ.", content: `• Kết quả: Đã lật đổ ách thống trị của thực dân Anh.\n• Ý nghĩa: Đưa đến sự thành lập Hợp chúng quốc Mỹ và mở đường cho kinh tế tư bản chủ nghĩa ở nước này phát triển.\n• Tính chất: Là một cuộc cách mạng tư sản.\n• Đặc điểm: Do tầng lớp chủ nô và tư sản lãnh đạo, diễn ra dưới hình thức cuộc chiến tranh giải phóng, thiết lập chế độ cộng hoà tổng thống.` },
+      { id: 6, title: "Câu 6: Khái quát quá trình xâm nhập Đông Nam Á của thực dân phương Tây.", content: `• Khu vực Đông Nam Á có vị trí địa lí quan trọng, giàu tài nguyên, thuận lợi cho buôn bán và mở rộng thuộc địa.\n• Bắt đầu từ thế kỉ XVI, nhiều nước phương Tây như Bồ Đào Nha, Tây Ban Nha, Hà Lan, Anh, Pháp lần lượt xâm nhập.` }
+    ];
+
+    // Working State Data
+    let activePart1 = [];
+    let activePart2 = [];
+    let activePart3 = [];
+
+    let userAnswersP1 = {};
+    let userAnswersP2 = {};
+    let isSubmitted = false;
+    let timerSeconds = 45 * 60;
+    let timerInterval = null;
+    let isTimerRunning = true;
+
+    // Shuffle Array Utility
+    function shuffleArray(arr) {
+      const array = JSON.parse(JSON.stringify(arr));
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Init & Shuffle Exam
+    function shuffleExam() {
+      // Reset state
+      userAnswersP1 = {};
+      userAnswersP2 = {};
+      isSubmitted = false;
+      timerSeconds = 45 * 60;
+      isTimerRunning = true;
+      document.getElementById('result-banner').classList.add('hidden');
+
+      // Shuffle Part 1 questions & options
+      activePart1 = shuffleArray(rawPart1).map(q => {
+        const shuffledOpts = shuffleArray(q.options);
+        return {
+          ...q,
+          options: shuffledOpts
+        };
+      });
+
+      // Shuffle Part 2 docs
+      activePart2 = shuffleArray(rawPart2);
+
+      // Shuffle Part 3 questions
+      activePart3 = shuffleArray(rawPart3);
+
+      // Re-render whole UI
+      renderPart1();
+      renderPart2();
+      renderPart3();
+      renderPalettes();
+
+      // Reset timer
+      clearInterval(timerInterval);
+      updateTimerDisplay();
+      startTimer();
+    }
+
+    window.onload = function() {
+      shuffleExam();
+    };
+
+    // Render Part 1
+    function renderPart1() {
+      const container = document.getElementById('container-part1');
+      container.innerHTML = activePart1.map((q, idx) => `
+        <div id="card-p1-${q.id}" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm transition hover:border-slate-700">
+          <div class="flex items-start gap-3">
+            <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-lg text-xs font-bold shrink-0">
+              Câu ${idx + 1}
+            </span>
+            <h3 class="text-sm sm:text-base font-semibold text-slate-100">${q.question}</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pl-2">
+            ${q.options.map((opt, oIdx) => `
+              <label onclick="selectP1(${q.id}, '${opt.replace(/'/g, "\\'")}', ${oIdx})" class="opt-label-p1-${q.id} flex items-center gap-3 p-3 rounded-xl border border-slate-800 bg-slate-950/50 hover:bg-slate-800/50 cursor-pointer transition text-xs sm:text-sm text-slate-300">
+                <input type="radio" name="p1_q${q.id}" value="${oIdx}" class="hidden">
+                <span class="opt-icon w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-400 shrink-0">
+                  ${String.fromCharCode(65 + oIdx)}
+                </span>
+                <span>${opt}</span>
+              </label>
+            `).join('')}
+          </div>
+          <div id="exp-p1-${q.id}" class="hidden mt-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+            <span class="font-bold text-amber-400"><i class="fa-solid fa-lightbulb"></i> Giải thích:</span> ${q.explanation}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render Part 2
+    function renderPart2() {
+      const container = document.getElementById('container-part2');
+      container.innerHTML = activePart2.map((q, idx) => `
+        <div id="card-p2-${q.id}" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-lg text-xs font-bold">
+              Tư liệu ${idx + 1}
+            </span>
+            <h3 class="text-sm sm:text-base font-bold text-slate-200">${q.title}</h3>
+          </div>
+          <div class="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800/80 text-xs sm:text-sm text-slate-300 italic leading-relaxed">
+            ${q.context}
+          </div>
+          <div class="space-y-3">
+            ${q.items.map(item => `
+              <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
+                <div class="flex gap-2">
+                  <span class="font-bold text-amber-400 uppercase">${item.key})</span>
+                  <span class="text-slate-300">${item.text}</span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button onclick="selectP2(${q.id}, '${item.key}', true)" id="btn-p2-${q.id}-${item.key}-true" class="px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-emerald-600/20 text-xs font-bold transition">
+                    Đúng (Đ)
+                  </button>
+                  <button onclick="selectP2(${q.id}, '${item.key}', false)" id="btn-p2-${q.id}-${item.key}-false" class="px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-red-600/20 text-xs font-bold transition">
+                    Sai (S)
+                  </button>
+                </div>
+              </div>
+              <div id="exp-p2-${q.id}-${item.key}" class="hidden ml-4 text-xs text-slate-400 italic">
+                ↳ Giải thích: ${item.exp}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render Part 3
+    function renderPart3() {
+      const container = document.getElementById('container-part3');
+      container.innerHTML = activePart3.map((q, idx) => `
+        <div id="card-p3-${q.id}" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <h3 class="text-sm sm:text-base font-bold text-amber-400">${q.title}</h3>
+          <div>
+            <textarea id="input-p3-${q.id}" oninput="markP3Answered(${q.id})" rows="3" placeholder="Gõ câu trả lời hoặc dàn ý tự luyện của bạn tại đây..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500/50 transition"></textarea>
+          </div>
+          <div>
+            <button onclick="toggleP3Answer(${q.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-300 px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-eye"></i> <span id="btn-txt-p3-${q.id}">Xem Đáp Án Chuẩn</span>
+            </button>
+            <div id="ans-p3-${q.id}" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-300 whitespace-pre-line leading-relaxed font-mono">
+              ${q.content}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render Palettes
+    function renderPalettes() {
+      const pal1 = document.getElementById('palette-part1');
+      pal1.innerHTML = activePart1.map((q, idx) => `
+        <button id="pal-p1-${q.id}" onclick="scrollToP1(${q.id})" class="h-8 rounded-lg bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-400 hover:border-amber-500/50 transition flex items-center justify-center">
+          ${idx + 1}
+        </button>
+      `).join('');
+
+      const pal2 = document.getElementById('palette-part2');
+      pal2.innerHTML = activePart2.map((q, idx) => `
+        <button id="pal-p2-${q.id}" onclick="scrollToP2(${q.id})" class="h-8 rounded-lg bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-400 hover:border-amber-500/50 transition flex items-center justify-center">
+          TL${idx + 1}
+        </button>
+      `).join('');
+
+      const pal3 = document.getElementById('palette-part3');
+      pal3.innerHTML = activePart3.map((q, idx) => `
+        <button id="pal-p3-${q.id}" onclick="scrollToP3(${q.id})" class="h-8 rounded-lg bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-400 hover:border-amber-500/50 transition flex items-center justify-center">
+          Câu ${idx + 1}
+        </button>
+      `).join('');
+    }
+
+    // Selections
+    function selectP1(qId, selectedText, optionIdx) {
+      if (isSubmitted) return;
+      userAnswersP1[qId] = selectedText;
+
+      const labels = document.querySelectorAll(`.opt-label-p1-${qId}`);
+      labels.forEach((lbl, idx) => {
+        if (idx === optionIdx) {
+          lbl.classList.add('bg-indigo-600/20', 'border-indigo-500', 'text-white');
+          lbl.classList.remove('bg-slate-950/50', 'border-slate-800', 'text-slate-300');
+        } else {
+          lbl.classList.remove('bg-indigo-600/20', 'border-indigo-500', 'text-white');
+          lbl.classList.add('bg-slate-950/50', 'border-slate-800', 'text-slate-300');
+        }
+      });
+
+      const palBtn = document.getElementById(`pal-p1-${qId}`);
+      palBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500');
+      palBtn.classList.remove('bg-slate-950', 'text-slate-400', 'border-slate-800');
+    }
+
+    function selectP2(qId, key, val) {
+      if (isSubmitted) return;
+      userAnswersP2[`${qId}_${key}`] = val;
+
+      const btnTrue = document.getElementById(`btn-p2-${qId}-${key}-true`);
+      const btnFalse = document.getElementById(`btn-p2-${qId}-${key}-false`);
+
+      if (val === true) {
+        btnTrue.className = "px-3 py-1 rounded-lg border border-emerald-500 bg-emerald-600 text-white text-xs font-bold transition";
+        btnFalse.className = "px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-red-600/20 text-xs font-bold transition";
+      } else {
+        btnFalse.className = "px-3 py-1 rounded-lg border border-red-500 bg-red-600 text-white text-xs font-bold transition";
+        btnTrue.className = "px-3 py-1 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-emerald-600/20 text-xs font-bold transition";
+      }
+
+      const allAnswered = ['a', 'b', 'c', 'd'].every(k => userAnswersP2[`${qId}_${k}`] !== undefined);
+      if (allAnswered) {
+        const palBtn = document.getElementById(`pal-p2-${qId}`);
+        palBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500');
+        palBtn.classList.remove('bg-slate-950', 'text-slate-400', 'border-slate-800');
+      }
+    }
+
+    function markP3Answered(qId) {
+      const val = document.getElementById(`input-p3-${qId}`).value.trim();
+      const palBtn = document.getElementById(`pal-p3-${qId}`);
+      if (val.length > 0) {
+        palBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500');
+        palBtn.classList.remove('bg-slate-950', 'text-slate-400', 'border-slate-800');
+      } else {
+        palBtn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-500');
+        palBtn.classList.add('bg-slate-950', 'text-slate-400', 'border-slate-800');
+      }
+    }
+
+    function toggleP3Answer(qId) {
+      const box = document.getElementById(`ans-p3-${qId}`);
+      const btnTxt = document.getElementById(`btn-txt-p3-${qId}`);
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        btnTxt.innerText = "Ẩn Đáp Án";
+      } else {
+        box.classList.add('hidden');
+        btnTxt.innerText = "Xem Đáp Án Chuẩn";
+      }
+    }
+
+    // Tabs & Navigation
+    function switchTab(tab) {
+      document.getElementById('section-part1').classList.toggle('hidden', tab !== 'part1');
+      document.getElementById('section-part2').classList.toggle('hidden', tab !== 'part2');
+      document.getElementById('section-part3').classList.toggle('hidden', tab !== 'part3');
+
+      const b1 = document.getElementById('tab-btn-part1');
+      const b2 = document.getElementById('tab-btn-part2');
+      const b3 = document.getElementById('tab-btn-part3');
+
+      [b1, b2, b3].forEach(b => b.className = "px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap transition");
+
+      if (tab === 'part1') b1.className = "px-4 py-2 text-sm font-bold border-b-2 border-amber-500 text-amber-400 whitespace-nowrap transition";
+      if (tab === 'part2') b2.className = "px-4 py-2 text-sm font-bold border-b-2 border-amber-500 text-amber-400 whitespace-nowrap transition";
+      if (tab === 'part3') b3.className = "px-4 py-2 text-sm font-bold border-b-2 border-amber-500 text-amber-400 whitespace-nowrap transition";
+    }
+
+    function scrollToP1(id) {
+      switchTab('part1');
+      document.getElementById(`card-p1-${id}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function scrollToP2(id) {
+      switchTab('part2');
+      document.getElementById(`card-p2-${id}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function scrollToP3(id) {
+      switchTab('part3');
+      document.getElementById(`card-p3-${id}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Timer Logic
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (isTimerRunning && timerSeconds > 0) {
+          timerSeconds--;
+          updateTimerDisplay();
+        } else if (timerSeconds === 0) {
+          clearInterval(timerInterval);
+          alert("Hết thời gian làm bài! Hệ thống tự động nộp bài.");
+          submitExam();
+        }
+      }, 1000);
+    }
+
+    function toggleTimer() {
+      isTimerRunning = !isTimerRunning;
+      const icon = document.getElementById('timer-icon');
+      icon.className = isTimerRunning ? "fa-solid fa-pause text-xs" : "fa-solid fa-play text-xs";
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+      const s = (timerSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('timer-display').innerText = `${m}:${s}`;
+    }
+
+    // Submit & Grading
+    function submitExam() {
+      if (isSubmitted) return;
+      isSubmitted = true;
+      clearInterval(timerInterval);
+
+      let correctP1Count = 0;
+      let totalP1 = activePart1.length;
+
+      // Grade Part 1
+      activePart1.forEach(q => {
+        const userAnsText = userAnswersP1[q.id];
+        const palBtn = document.getElementById(`pal-p1-${q.id}`);
+        const expBox = document.getElementById(`exp-p1-${q.id}`);
+        expBox.classList.remove('hidden');
+
+        const labels = document.querySelectorAll(`.opt-label-p1-${q.id}`);
+
+        labels.forEach((lbl, oIdx) => {
+          const optText = q.options[oIdx];
+          if (optText === q.correctText) {
+            lbl.classList.add('bg-emerald-600/30', 'border-emerald-500', 'text-emerald-200');
+          } else if (userAnsText === optText && userAnsText !== q.correctText) {
+            lbl.classList.add('bg-red-600/30', 'border-red-500', 'text-red-200');
+          }
+        });
+
+        if (userAnsText === q.correctText) {
+          correctP1Count++;
+          palBtn.className = "h-8 rounded-lg bg-emerald-500 text-white font-bold text-xs flex items-center justify-center";
+        } else {
+          palBtn.className = "h-8 rounded-lg bg-red-500 text-white font-bold text-xs flex items-center justify-center";
+        }
+      });
+
+      // Grade Part 2
+      let correctP2Items = 0;
+      let totalP2Items = 20;
+
+      activePart2.forEach(q => {
+        let qAllCorrect = true;
+        q.items.forEach(item => {
+          const userVal = userAnswersP2[`${q.id}_${item.key}`];
+          const expBox = document.getElementById(`exp-p2-${q.id}-${item.key}`);
+          expBox.classList.remove('hidden');
+
+          if (userVal === item.correct) {
+            correctP2Items++;
+          } else {
+            qAllCorrect = false;
+          }
+        });
+
+        const palBtn = document.getElementById(`pal-p2-${q.id}`);
+        if (qAllCorrect) {
+          palBtn.className = "h-8 rounded-lg bg-emerald-500 text-white font-bold text-xs flex items-center justify-center";
+        } else {
+          palBtn.className = "h-8 rounded-lg bg-red-500 text-white font-bold text-xs flex items-center justify-center";
+        }
+      });
+
+      // Show Part 3 Answers
+      activePart3.forEach(q => {
+        document.getElementById(`ans-p3-${q.id}`).classList.remove('hidden');
+        document.getElementById(`btn-txt-p3-${q.id}`).innerText = "Ẩn Đáp Án";
+      });
+
+      // Grade Calculation (Scale 10: Part 1 = 1.5, Part 2 = 8.5)
+      const scoreP1 = (correctP1Count / totalP1) * 1.5;
+      const scoreP2 = (correctP2Items / totalP2Items) * 8.5;
+      const totalScore = (scoreP1 + scoreP2).toFixed(1);
+
+      const totalCorrect = correctP1Count + correctP2Items;
+      const totalQuestions = totalP1 + totalP2Items;
+      const accuracy = Math.round((totalCorrect / totalQuestions) * 100);
+
+      document.getElementById('res-score-mcq').innerText = `${totalScore} / 10`;
+      document.getElementById('res-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('result-banner').classList.remove('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
